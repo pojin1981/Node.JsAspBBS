@@ -23,6 +23,11 @@ const https = require("https");
 const url = require("url");
 const path = require("path");
 
+function safeDecode(str) {
+	try { return decodeURIComponent(str); }
+	catch(err) { return str; }
+}
+
 process.chdir(__dirname);
 const app = (req, res) => {
 	const { pathname, query } = url.parse(req.url, true);
@@ -38,7 +43,7 @@ const app = (req, res) => {
 		"REQUEST_METHOD": req.method,
 		"REQUEST_URI": req.url,
 		"PATH_INFO": paths.slice(1).join(".asp"),
-		"URL": decodeURIComponent(paths[1] ? paths[0] + ".asp" : paths[0])
+		"URL": safeDecode(paths[1] ? paths[0] + ".asp" : paths[0])
 	};
 	for(var x in req.headers) site.env["HTTP_" + x.toUpperCase().replace(/\-/g, "_")] = req.headers[x];
 	if(req.connection.encrypted) site.env["HTTPS"] = "on";
